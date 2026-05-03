@@ -18,3 +18,4 @@ let id: ObjectId = "536f6d652073656372657420".parse().unwrap();
 
 ## Features
 - `archive`: Enables serialization/deserialization using the `rkyv` crate.
+- `serde`: Enables serialization/deserialization using the `serde` crate.
