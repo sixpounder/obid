@@ -2,7 +2,9 @@ This crate provides an implementation of the ObjectId data type as defined in th
 
 ## Usage
 
-Simply add `obid` to your `Cargo.toml` and use the `ObjectId` type.
+```bash
+cargo add obid
+```
 
 ```rust
 use obid::ObjectId;
