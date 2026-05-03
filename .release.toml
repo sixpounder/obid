@@ -1,13 +1,12 @@
 tag-prefix = "v"
 sign-tag = true
 push = true
-publish = true
 sign-commit = true
-no-dev-version = false
 push-remote = "origin"
-pre-release-commit-message = "chore: release version {version}"
-tag-message = "release {version}"
-pre-release-hook = [ "git", "cliff", "-o", "CHANGELOG.md", "--tag", "{{version}}" ]
+publish = true
+no-dev-version = false
+pre-release-commit-message = "chore: release version {{version}}"
+tag-message = "release {{version}}"
 
 [[pre-release-replacements]]
 file = "CHANGELOG.md"
