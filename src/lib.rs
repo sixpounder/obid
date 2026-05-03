@@ -14,12 +14,18 @@ use chrono::{DateTime, Utc};
 use rand::Rng;
 use thiserror::Error;
 
+use crate::byte_gen::next_3byte_be;
+
 const OBJECT_ID_LENGTH: usize = 12;
 
 /// An implementation of the ObjectId data type as defined in the BSON specification.
 ///
 /// An ObjectId is a 12-byte value consisting of a 4-byte timestamp, a 5-byte random value, and a 3-byte counter.
 #[repr(C)]
+#[cfg_attr(
+    feature = "archive",
+    derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::Portable)
+)]
 #[derive(Clone, Debug, PartialEq, Hash, Eq)]
 pub struct ObjectId {
     ts: [u8; 4],
@@ -223,21 +229,8 @@ fn hex_to_bytes(hex: &str) -> Result<Vec<u8>, std::num::ParseIntError> {
         .collect()
 }
 
-#[cfg(feature = "archive")]
-use rkyv::Archive;
-
-use crate::byte_gen::next_3byte_be;
-
-#[cfg(feature = "archive")]
-impl Archive for ObjectId {
-    type Archived = [u8; OBJECT_ID_LENGTH];
-
-    type Resolver = ();
-
-    fn resolve(&self, _resolver: Self::Resolver, out: rkyv::Place<Self::Archived>) {
-        out.write(*self.as_slice());
-    }
-}
+#[cfg(feature = "serde")]
+mod serde;
 
 /// Represents an error that can occur when creating an ObjectId.
 #[derive(Debug, Clone, Error)]

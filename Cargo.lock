@@ -345,6 +345,8 @@ dependencies = [
  "libc",
  "rand",
  "rkyv",
+ "serde",
+ "serde_json",
  "thiserror",
 ]
 
