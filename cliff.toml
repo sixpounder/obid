@@ -1,0 +1,24 @@
+# Generate CHANGELOG.md from commit history following Conventional Commits
+format = "keep-a-changelog"        # output format
+scope = ["*"]                      # include all scopes
+tag-prefix = "v"                   # git tags like v1.2.3
+unreleased-label = "Unreleased"
+changelog = { path = "CHANGELOG.md" }
+increment = "conventional"         # derive next version from commits (optional)
+
+[parser.conventional]
+# Map conventional commit types -> changelog sections
+types = [
+  { type = "feat", section = "Added" },
+  { type = "fix",  section = "Fixed" },
+  { type = "perf", section = "Performance" },
+  { type = "refactor", section = "Changed" },
+  { type = "docs", section = "Documentation" },
+  { type = "chore", section = "Miscellaneous" },
+  { type = "ci", section = "CI" },
+  { type = "style", section = "Style" },
+  { type = "test", section = "Tests" }
+]
+
+[writer]
+# optional template tweaks; keep defaults for standard output
