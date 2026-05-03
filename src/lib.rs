@@ -96,12 +96,6 @@ impl ObjectId {
         debug_assert_eq!(size_of::<Self>(), 12);
         unsafe { &*(self as *const Self as *const [u8; OBJECT_ID_LENGTH]) }
     }
-
-    /// Mutable variant if you need to modify the bytes in-place.
-    pub fn as_mut_slice(&mut self) -> &mut [u8] {
-        debug_assert_eq!(size_of::<Self>(), 12);
-        unsafe { &mut *(self as *mut Self as *mut [u8; OBJECT_ID_LENGTH]) }
-    }
 }
 
 impl Default for ObjectId {
