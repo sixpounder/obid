@@ -7,16 +7,12 @@ All notable changes to this project will be documented in this file.
 ### Documentation
 
 - Add changelog for next release ([158a025](158a0259a882f799d841c0c1fedecb8b749c9110))
-- Add changelog for next release ([720f483](720f4834b6bc5aa45a2c0480ed8a321bbbbecbb3))
 
 ### Features
 
 - First implementation ([4120d3d](4120d3dbc61dee168ac5d58487cff72855ce76d8))
 - Remove as_slice_mut ([1f6cae9](1f6cae9e4aaaa9080b532131a9579773da23a5be))
 - Use low level RNGs ([ff2efb9](ff2efb9b46f969285f37f59c52d7fc7a9d58fc10))
-- First implementation ([4afd221](4afd2210767c49dfe1e5cc2f1b8f381b96e9089d))
-- Remove as_slice_mut ([bc5373d](bc5373dde55504a335f36e0b9e4dd42c7fd73f26))
-- Use low level RNGs ([7dd2f0f](7dd2f0fba7856d273795b4c834601264d81c666a))
 
 ### Miscellaneous Tasks
 
