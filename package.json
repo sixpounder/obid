@@ -1,0 +1,22 @@
+{
+  "name": "obid",
+  "version": "1.0.0",
+  "description": "This crate provides an implementation of the ObjectId data type as defined in the BSON specification.",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "GPL-3.0-only",
+  "devDependencies": {
+    "@commitlint/cli": "^20.5.3",
+    "@commitlint/config-conventional": "^20.5.3",
+    "husky": "^9.1.7"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "scripts": {
+    "prepare": "husky"
+  }
+}
