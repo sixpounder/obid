@@ -5,7 +5,7 @@
 # A Tera template to be rendered as the changelog's header.
 # See https://keats.github.io/tera/docs/#introduction
 header = """
-# Changelog\n
+# Changelog \n
 All notable changes to this project will be documented in this file.\n
 """
 # A Tera template to be rendered for each release in the changelog.
@@ -59,7 +59,10 @@ commit_parsers = [
     { message = "^refactor", group = "Refactor" },
     { message = "^style", group = "Styling" },
     { message = "^test", group = "Testing" },
+    { message = "^chore\\(dev.*\\)", skip = true },
+    { message = "^chore\\(ignore.*\\)", skip = true },
     { message = "^chore\\(deps.*\\)", skip = true },
+    { message = "^chore: bump version", skip = true },
     { message = "^chore\\(pr\\)", skip = true },
     { message = "^chore\\(pull\\)", skip = true },
     { message = "^chore\\(release\\): prepare for", skip = true },
