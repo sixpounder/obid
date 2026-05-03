@@ -8,6 +8,9 @@ license-file = "LICENSE"
 authors = ["Andrea Coronese <sixpounder@protonmail.com>"]
 readme = "README.md"
 categories = ["cryptography", "algorithms"]
+documentation = "https://docs.rs/obid/"
+homepage = "https://github.com/sixpounder/obid"
+repository = "https://github.com/sixpounder/obid"
 
 [dependencies]
 chrono = "0.4.44"
