@@ -17,7 +17,7 @@ impl<'de> Deserialize<'de> for ObjectId {
         D: serde::Deserializer<'de>,
     {
         let bytes: Vec<u8> = Deserialize::deserialize(deserializer)?;
-        Ok(ObjectId::try_from_slice(&bytes).unwrap())
+        ObjectId::try_from_slice(&bytes).map_err(|e| serde::de::Error::custom(e))
     }
 }
 
