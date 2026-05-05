@@ -19,7 +19,7 @@ use thiserror::Error;
 
 use crate::byte_gen::next_3byte_be;
 
-const OBJECT_ID_LENGTH: usize = 12;
+pub(crate) const OBJECT_ID_LENGTH: usize = 12;
 
 /// An implementation of the ObjectId data type as defined in the BSON specification.
 ///
@@ -268,8 +268,8 @@ mod tests {
         assert_ne!(id, from_literal_bytes);
     }
 
+    /// Tests that an ObjectId can be created from cypher
     #[test]
-    #[doc = "Tests that an ObjectId can be created from cypher"]
     fn test_object_id_from_string_slice() {
         let cypher = "Some secret phrase here";
         let id = ObjectId::try_from(cypher);
@@ -279,8 +279,8 @@ mod tests {
         assert_eq!(created_id.clone().to_string(), "536f6d652073656372657420");
     }
 
+    /// Tests that an ObjectId cannot be created from a too short cypher
     #[test]
-    #[doc = "Tests that an ObjectId cannot be created from a too short cypher"]
     fn test_object_id_from_string_slice_short() {
         let cypher = "short";
         let id = ObjectId::try_from(cypher.to_string());
@@ -296,8 +296,8 @@ mod tests {
         assert_ne!(id.seconds(), 0);
     }
 
+    /// Refer to https://specifications.readthedocs.io/en/latest/bson-objectid/objectid/#test-plan
     #[test]
-    #[doc = "Refer to https://specifications.readthedocs.io/en/latest/bson-objectid/objectid/#test-plan"]
     fn test_object_id_timestamp() {
         assert_eq!(
             ObjectId::with_timestamp_seconds(0x00000000)
@@ -325,8 +325,8 @@ mod tests {
         );
     }
 
+    /// Tests that subsequent ObjectId creation is ordered by timestamp and, if that's equal, by its progressive counter too
     #[test]
-    #[doc = "Tests that subsequent ObjectId creation is ordered by timestamp and, if that's equal, by its progressive counter too"]
     fn subsequent_creation_ordering() {
         let first = ObjectId::default();
         let second = ObjectId::default();

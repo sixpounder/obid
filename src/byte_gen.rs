@@ -28,11 +28,10 @@ pub(crate) fn next_3byte_be() -> [u8; 3] {
     // increment and return
     let mut guard = COUNTER.get().unwrap().lock().unwrap();
     let cur = *guard;
-    let ret = cur as u32;
     // increment with wrap at 2^24
     *guard = (cur.wrapping_add(1)) & 0x00FF_FFFF;
     // return big-endian top 3 bytes
-    [(ret >> 16) as u8, (ret >> 8) as u8, (ret) as u8]
+    [(cur >> 16) as u8, (cur >> 8) as u8, (cur) as u8]
 }
 
 fn try_seed_from_os() -> Option<u64> {
@@ -60,11 +59,12 @@ fn deterministic_seed() -> u64 {
 }
 
 fn get_hostname_string() -> String {
-    if let Ok(h) = std::env::var("HOSTNAME") {
-        if !h.is_empty() {
-            return h;
-        }
+    if let Ok(h) = std::env::var("HOSTNAME")
+        && !h.is_empty()
+    {
+        return h;
     }
+
     #[cfg(unix)]
     {
         use libc::{_SC_HOST_NAME_MAX, c_char, sysconf};
@@ -73,10 +73,10 @@ fn get_hostname_string() -> String {
         let buf_len = if max > 0 { max + 1 } else { 256 };
         let mut buf = vec![0u8; buf_len];
         let ptr = buf.as_mut_ptr() as *mut c_char;
-        if unsafe { libc::gethostname(ptr, buf_len) } == 0 {
-            if let Ok(s) = unsafe { CStr::from_ptr(ptr) }.to_str() {
-                return s.to_owned();
-            }
+        if unsafe { libc::gethostname(ptr, buf_len) } == 0
+            && let Ok(s) = unsafe { CStr::from_ptr(ptr) }.to_str()
+        {
+            return s.to_owned();
         }
     }
     String::from("unknown-host")
