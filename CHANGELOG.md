@@ -2,13 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.3.1 - 2026-05-05
+
+[2b75325](2b7532549fe46a4889af68a301c8c55770e1fee3)...[7eacaf0](7eacaf0888f95c6732cb67d3fe979b78a9d33a0e)
+
+### Documentation
+
+- Update readme ([f115458](f1154585f3de8aae20a53a6fdc1535741185a858))
+
+### Features
+
+- Do not unwrap on serde deserialize ([5460441](54604416c413f26717b028e6b6da6b5aaa919ed5))
+- Stabilize serde feature ([7eacaf0](7eacaf0888f95c6732cb67d3fe979b78a9d33a0e))
+
 ## 0.3.0 - 2026-05-03
 
-[eaabbef](eaabbef99a356793cf193f33f77f9e7aa01a37c5)...[4792a5f](4792a5ffc5c1146a48977d197c93a2c06860c845)
+[eaabbef](eaabbef99a356793cf193f33f77f9e7aa01a37c5)...[2b75325](2b7532549fe46a4889af68a301c8c55770e1fee3)
 
 ### Features
 
 - Add serde support ([4792a5f](4792a5ffc5c1146a48977d197c93a2c06860c845))
+
+### Miscellaneous Tasks
+
+- Release version 0.3.0 ([2b75325](2b7532549fe46a4889af68a301c8c55770e1fee3))
 
 ## 0.2.0 - 2026-05-03
 
