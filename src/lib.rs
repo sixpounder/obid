@@ -2,6 +2,9 @@
 
 mod byte_gen;
 
+#[cfg(feature = "serde")]
+mod serde;
+
 use std::{
     array::TryFromSliceError,
     fmt::{Debug, Display},
@@ -228,9 +231,6 @@ fn hex_to_bytes(hex: &str) -> Result<Vec<u8>, std::num::ParseIntError> {
         .map(|i| u8::from_str_radix(&s[i..i + 2], 16))
         .collect()
 }
-
-#[cfg(feature = "serde")]
-mod serde;
 
 /// Represents an error that can occur when creating an ObjectId.
 #[derive(Debug, Clone, Error)]

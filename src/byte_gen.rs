@@ -10,7 +10,7 @@ static COUNTER: OnceLock<Mutex<u32>> = OnceLock::new();
 
 /// Return a 3-byte big-endian counter. The counter is initialized to a random
 /// value on first call and increments by 1 on each call, wrapping to 0 after 0xFFFFFF.
-pub fn next_3byte_be() -> [u8; 3] {
+pub(crate) fn next_3byte_be() -> [u8; 3] {
     // initialize COUNTER once
     COUNTER.get_or_init(|| {
         // Attempt to seed from OS RNG without blocking using getrandom.
