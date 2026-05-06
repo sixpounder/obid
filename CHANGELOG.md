@@ -2,9 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.5.0 - 2026-05-06
+
+[f6e6f39](f6e6f3946b9c8037dedd1302710a9de7683fd315)...[d478d39](d478d39afd61fe7196a58cfcabeadffc493719e7)
+
+### Features
+
+- Simplify hostname detection ([2b8deab](2b8deabba612e2f8790a92eb345b2c18597f8802))
+- Std feature ([d478d39](d478d39afd61fe7196a58cfcabeadffc493719e7))
+
+### Miscellaneous Tasks
+
+- Reduce reliance on std library ([12116d2](12116d2b9e846a900cc24a4530d07f6d6607f296))
+
 ## 0.4.0 - 2026-05-06
 
-[8435caf](8435caf832ae9f32df1c94913e9cee5532294f56)...[00c7f16](00c7f16f094863c88069a9daa2851d6754c39f95)
+[8435caf](8435caf832ae9f32df1c94913e9cee5532294f56)...[f6e6f39](f6e6f3946b9c8037dedd1302710a9de7683fd315)
 
 ### Features
 
@@ -15,6 +28,7 @@ All notable changes to this project will be documented in this file.
 
 - Make clippy happy ([732c1a6](732c1a6bcd3fcf0c5cc90f53070370df0370ff54))
 - Rename readme with correct casing ([517539d](517539d91aef0bfcd5286b924868927c2bda6011))
+- Release version 0.4.0 ([f6e6f39](f6e6f3946b9c8037dedd1302710a9de7683fd315))
 
 ## 0.3.1 - 2026-05-05
 
