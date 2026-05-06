@@ -57,26 +57,6 @@ fn deterministic_seed() -> u64 {
 
 /// Returns the hostname as a string, using the `HOSTNAME` environment variable if set,
 /// or the system's hostname if available.
-fn get_hostname_string() -> String {
-    if let Ok(h) = std::env::var("HOSTNAME")
-        && !h.is_empty()
-    {
-        return h;
-    }
-
-    #[cfg(unix)]
-    {
-        use libc::{_SC_HOST_NAME_MAX, c_char, sysconf};
-        use std::ffi::CStr;
-        let max = unsafe { sysconf(_SC_HOST_NAME_MAX) } as usize;
-        let buf_len = if max > 0 { max + 1 } else { 256 };
-        let mut buf = vec![0u8; buf_len];
-        let ptr = buf.as_mut_ptr() as *mut c_char;
-        if unsafe { libc::gethostname(ptr, buf_len) } == 0
-            && let Ok(s) = unsafe { CStr::from_ptr(ptr) }.to_str()
-        {
-            return s.to_owned();
-        }
-    }
-    String::from("unknown-host")
+fn get_hostname_string() -> std::ffi::OsString {
+    gethostname::gethostname()
 }
