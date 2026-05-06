@@ -210,7 +210,7 @@ impl FromStr for ObjectId {
     }
 }
 
-const TS_PATTERN: &'static str = "[year]-[month]-[day] [hour repr:24]:[minute]:[second] [offset_hour sign:mandatory]:[offset_minute]";
+const TS_PATTERN: &str = "[year]-[month]-[day] [hour repr:24]:[minute]:[second] [offset_hour sign:mandatory]:[offset_minute]";
 
 pub struct Timestamp {
     timestamp: time::OffsetDateTime,
@@ -250,7 +250,7 @@ fn hex_to_bytes(hex: &str) -> Result<Vec<u8>, ObjectIdError> {
         .step_by(2)
         .map(|i| {
             if i + 2 > s.len() {
-                return Err(ObjectIdError::Parse(format!("invalid digit at index {i}")));
+                Err(ObjectIdError::Parse(format!("invalid digit at index {i}")))
             } else {
                 u8::from_str_radix(&s[i..i + 2], 16)
                     .map_err(|e| ObjectIdError::Parse(e.to_string()))
