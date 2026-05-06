@@ -1,7 +1,6 @@
 use std::{
     hash::{DefaultHasher, Hash, Hasher},
     sync::{OnceLock, atomic::AtomicU32},
-    time::{SystemTime, UNIX_EPOCH},
 };
 
 use rand::{Rng, SeedableRng, rngs::SmallRng};
@@ -45,10 +44,7 @@ fn try_seed_from_os() -> Option<u64> {
 
 /// Returns a deterministic seed based on the current time, process ID, and hostname.
 fn deterministic_seed() -> u64 {
-    let now = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map(|d| d.as_nanos())
-        .unwrap_or(0);
+    let now = time::OffsetDateTime::now_utc().nanosecond();
     let pid = std::process::id();
     let hostname = get_hostname_string();
 

@@ -10,10 +10,8 @@ use std::{
     fmt::{Debug, Display},
     ops::Deref,
     str::FromStr,
-    time::{SystemTime, UNIX_EPOCH},
 };
 
-use chrono::{DateTime, Utc};
 use rand::Rng;
 use thiserror::Error;
 
@@ -76,8 +74,11 @@ impl ObjectId {
     }
 
     /// Returns the timestamp component of the ObjectId as a `DateTime<Utc>`.
-    pub fn timestamp(&self) -> DateTime<Utc> {
-        DateTime::from_timestamp_secs(self.seconds() as i64).expect("invalid timestamp")
+    pub fn timestamp(&self) -> Timestamp {
+        Timestamp {
+            timestamp: time::OffsetDateTime::from_unix_timestamp(self.seconds() as i64)
+                .expect("invalid timestamp"),
+        }
     }
 
     /// Parses an ObjectId from a slice of bytes.
@@ -201,8 +202,22 @@ impl FromStr for ObjectId {
     }
 }
 
+const TS_PATTERN: &'static str = "[year]-[month]-[day] [hour repr:24]:[minute]:[second] [offset_hour sign:mandatory]:[offset_minute]";
+
+pub struct Timestamp {
+    timestamp: time::OffsetDateTime,
+}
+
+impl Display for Timestamp {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let fmt = time::format_description::parse(TS_PATTERN).unwrap();
+        let s = self.timestamp.format(&fmt).unwrap();
+        write!(f, "{}", s)
+    }
+}
+
 /// Return a vector (slice-able) of `len` cryptographically-random bytes.
-pub fn rand_bytes(len: usize) -> Vec<u8> {
+pub(crate) fn rand_bytes(len: usize) -> Vec<u8> {
     let mut buf = vec![0u8; len];
     rand::rng().fill_bytes(&mut buf);
     buf
@@ -211,14 +226,11 @@ pub fn rand_bytes(len: usize) -> Vec<u8> {
 /// Return the current Unix seconds as a 4-byte array with the seconds
 /// in the highest-order bytes (big-endian).
 fn unix_seconds_be4() -> Result<[u8; 4], ObjectIdError> {
-    let now = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map_err(|_| ObjectIdError::InvalidSeed)?;
-    let secs = now.as_secs();
-    if secs > u32::MAX as u64 {
+    let now = time::OffsetDateTime::now_utc().unix_timestamp();
+    if now > u32::MAX as i64 {
         return Err(ObjectIdError::SeedOverflow);
     }
-    Ok((secs as u32).to_be_bytes())
+    Ok((now as u32).to_be_bytes())
 }
 
 fn hex_to_bytes(hex: &str) -> Result<Vec<u8>, std::num::ParseIntError> {
@@ -303,25 +315,25 @@ mod tests {
             ObjectId::with_timestamp_seconds(0x00000000)
                 .timestamp()
                 .to_string(),
-            "1970-01-01 00:00:00 UTC"
+            "1970-01-01 00:00:00 +00:00"
         );
         assert_eq!(
             ObjectId::with_timestamp_seconds(0x7FFFFFFF)
                 .timestamp()
                 .to_string(),
-            "2038-01-19 03:14:07 UTC"
+            "2038-01-19 03:14:07 +00:00"
         );
         assert_eq!(
             ObjectId::with_timestamp_seconds(0x80000000)
                 .timestamp()
                 .to_string(),
-            "2038-01-19 03:14:08 UTC"
+            "2038-01-19 03:14:08 +00:00"
         );
         assert_eq!(
             ObjectId::with_timestamp_seconds(0xFFFFFFFF)
                 .timestamp()
                 .to_string(),
-            "2106-02-07 06:28:15 UTC"
+            "2106-02-07 06:28:15 +00:00"
         );
     }
 
