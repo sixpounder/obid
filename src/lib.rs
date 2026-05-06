@@ -5,13 +5,20 @@ mod byte_gen;
 #[cfg(feature = "serde")]
 mod serde;
 
-use std::{
+extern crate alloc;
+
+use core::{
     array::TryFromSliceError,
     fmt::{Debug, Display},
     ops::Deref,
     str::FromStr,
 };
 
+use alloc::{
+    format,
+    string::{String, ToString},
+    vec::Vec,
+};
 use rand::Rng;
 use thiserror::Error;
 
@@ -59,7 +66,7 @@ impl ObjectId {
 
     /// Creates an ObjectId with the given timestamp in big-endian bytes.
     fn with_timestamp_bytes(ts: [u8; 4]) -> Self {
-        let rnd = rand_bytes(5).try_into().unwrap();
+        let rnd = five_rand_bytes();
 
         Self {
             ts,
@@ -123,9 +130,9 @@ impl Deref for ObjectId {
 }
 
 impl PartialOrd for ObjectId {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+    fn partial_cmp(&self, other: &Self) -> Option<core::cmp::Ordering> {
         match self.ts.cmp(&other.ts) {
-            std::cmp::Ordering::Equal => Some(self.prg.cmp(&other.prg)),
+            core::cmp::Ordering::Equal => Some(self.prg.cmp(&other.prg)),
             other => Some(other),
         }
     }
@@ -145,7 +152,7 @@ impl AsRef<str> for ObjectId {
 }
 
 impl Display for ObjectId {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(
             f,
             "{}",
@@ -209,7 +216,7 @@ pub struct Timestamp {
 }
 
 impl Display for Timestamp {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         let fmt = time::format_description::parse(TS_PATTERN).unwrap();
         let s = self.timestamp.format(&fmt).unwrap();
         write!(f, "{}", s)
@@ -217,8 +224,8 @@ impl Display for Timestamp {
 }
 
 /// Return a vector (slice-able) of `len` cryptographically-random bytes.
-pub(crate) fn rand_bytes(len: usize) -> Vec<u8> {
-    let mut buf = vec![0u8; len];
+pub(crate) fn five_rand_bytes() -> [u8; 5] {
+    let mut buf = [0u8; 5];
     rand::rng().fill_bytes(&mut buf);
     buf
 }
@@ -233,7 +240,7 @@ fn unix_seconds_be4() -> Result<[u8; 4], ObjectIdError> {
     Ok((now as u32).to_be_bytes())
 }
 
-fn hex_to_bytes(hex: &str) -> Result<Vec<u8>, std::num::ParseIntError> {
+fn hex_to_bytes(hex: &str) -> Result<Vec<u8>, core::num::ParseIntError> {
     let s = hex
         .strip_prefix("0x")
         .or_else(|| hex.strip_prefix("0X"))
@@ -287,7 +294,6 @@ mod tests {
         let id = ObjectId::try_from(cypher);
         assert!(id.is_ok());
         let created_id = id.unwrap();
-        dbg!(&created_id.to_string());
         assert_eq!(created_id.clone().to_string(), "536f6d652073656372657420");
     }
 
@@ -343,7 +349,6 @@ mod tests {
         let first = ObjectId::default();
         let second = ObjectId::default();
 
-        dbg!(&first, &second);
         assert!(first < second);
         assert!(first != second);
         assert!(second >= first);

@@ -1,6 +1,8 @@
-use std::{
-    hash::{DefaultHasher, Hash, Hasher},
-    sync::{OnceLock, atomic::AtomicU32},
+use std::sync::OnceLock;
+
+use core::{
+    hash::{BuildHasher, Hash, Hasher},
+    sync::atomic::AtomicU32,
 };
 
 use rand::{Rng, SeedableRng, rngs::SmallRng};
@@ -48,7 +50,8 @@ fn deterministic_seed() -> u64 {
     let pid = std::process::id();
     let hostname = get_hostname_string();
 
-    let mut hasher = DefaultHasher::new();
+    let hasher = hashbrown::DefaultHashBuilder::default();
+    let mut hasher = hasher.build_hasher();
     now.hash(&mut hasher);
     pid.hash(&mut hasher);
     hostname.hash(&mut hasher);
