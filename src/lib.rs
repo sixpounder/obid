@@ -352,4 +352,24 @@ mod tests {
                 < ObjectId::with_timestamp_seconds(0xFFFFFFFF)
         );
     }
+
+    #[test]
+    fn parallel_threads() {
+        let num_threads = 10;
+        let mut handles = Vec::new();
+
+        for _ in 0..num_threads {
+            let handle = std::thread::spawn(|| {
+                for _ in 0..1000 {
+                    let id = ObjectId::default();
+                    assert!(!id.is_empty());
+                }
+            });
+            handles.push(handle);
+        }
+
+        for handle in handles {
+            handle.join().unwrap();
+        }
+    }
 }

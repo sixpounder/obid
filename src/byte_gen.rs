@@ -1,18 +1,18 @@
 use std::{
     hash::{DefaultHasher, Hash, Hasher},
-    sync::{Mutex, OnceLock},
+    sync::{OnceLock, atomic::AtomicU32},
     time::{SystemTime, UNIX_EPOCH},
 };
 
 use rand::{Rng, SeedableRng, rngs::SmallRng};
 
-static COUNTER: OnceLock<Mutex<u32>> = OnceLock::new();
+static COUNTER: OnceLock<AtomicU32> = OnceLock::new();
 
 /// Return a 3-byte big-endian counter. The counter is initialized to a random
 /// value on first call and increments by 1 on each call, wrapping to 0 after 0xFFFFFF.
 pub(crate) fn next_3byte_be() -> [u8; 3] {
     // initialize COUNTER once
-    COUNTER.get_or_init(|| {
+    let counter = COUNTER.get_or_init(|| {
         // Attempt to seed from OS RNG without blocking using getrandom.
         // If getrandom fails, fall back to deterministic seed composed of time/pid/hostname.
         let seed_u64 = match try_seed_from_os() {
@@ -22,18 +22,18 @@ pub(crate) fn next_3byte_be() -> [u8; 3] {
         // Initialize to a 24-bit value
         let mut rng = SmallRng::seed_from_u64(seed_u64);
         let initial = rng.next_u32() & 0x00FF_FFFF;
-        Mutex::new(initial)
+        AtomicU32::new(initial)
     });
 
     // increment and return
-    let mut guard = COUNTER.get().unwrap().lock().unwrap();
-    let cur = *guard;
-    // increment with wrap at 2^24
-    *guard = (cur.wrapping_add(1)) & 0x00FF_FFFF;
+    let prev = counter.fetch_add(1, core::sync::atomic::Ordering::Release); // atomic, wraps
+    let new = prev.wrapping_add(1); // new value (wrapped)
     // return big-endian top 3 bytes
-    [(cur >> 16) as u8, (cur >> 8) as u8, (cur) as u8]
+    [(new >> 16) as u8, (new >> 8) as u8, (new) as u8]
 }
 
+/// Attempts to seed the RNG from the OS's RNG using getrandom,
+/// falling back to a deterministic seed if unavailable.
 fn try_seed_from_os() -> Option<u64> {
     let mut buf = [0u8; 8];
     if getrandom::fill(&mut buf).is_ok() {
@@ -43,6 +43,7 @@ fn try_seed_from_os() -> Option<u64> {
     }
 }
 
+/// Returns a deterministic seed based on the current time, process ID, and hostname.
 fn deterministic_seed() -> u64 {
     let now = SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -58,6 +59,8 @@ fn deterministic_seed() -> u64 {
     hasher.finish()
 }
 
+/// Returns the hostname as a string, using the `HOSTNAME` environment variable if set,
+/// or the system's hostname if available.
 fn get_hostname_string() -> String {
     if let Ok(h) = std::env::var("HOSTNAME")
         && !h.is_empty()
