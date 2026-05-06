@@ -2,9 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.4.0 - 2026-05-06
+
+[8435caf](8435caf832ae9f32df1c94913e9cee5532294f56)...[00c7f16](00c7f16f094863c88069a9daa2851d6754c39f95)
+
+### Features
+
+- Use atomics instead of mutex ([145fef3](145fef3c4befe353d82e0ddd30865a88c72e78fc))
+- Make use of "time" ([00c7f16](00c7f16f094863c88069a9daa2851d6754c39f95))
+
+### Miscellaneous Tasks
+
+- Make clippy happy ([732c1a6](732c1a6bcd3fcf0c5cc90f53070370df0370ff54))
+- Rename readme with correct casing ([517539d](517539d91aef0bfcd5286b924868927c2bda6011))
+
 ## 0.3.1 - 2026-05-05
 
-[2b75325](2b7532549fe46a4889af68a301c8c55770e1fee3)...[7eacaf0](7eacaf0888f95c6732cb67d3fe979b78a9d33a0e)
+[2b75325](2b7532549fe46a4889af68a301c8c55770e1fee3)...[8435caf](8435caf832ae9f32df1c94913e9cee5532294f56)
 
 ### Documentation
 
@@ -14,6 +28,10 @@ All notable changes to this project will be documented in this file.
 
 - Do not unwrap on serde deserialize ([5460441](54604416c413f26717b028e6b6da6b5aaa919ed5))
 - Stabilize serde feature ([7eacaf0](7eacaf0888f95c6732cb67d3fe979b78a9d33a0e))
+
+### Miscellaneous Tasks
+
+- Release version 0.3.1 ([8435caf](8435caf832ae9f32df1c94913e9cee5532294f56))
 
 ## 0.3.0 - 2026-05-03
 
