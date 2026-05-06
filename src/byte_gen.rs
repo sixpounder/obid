@@ -1,5 +1,3 @@
-use std::sync::OnceLock;
-
 use core::{
     hash::{BuildHasher, Hash, Hasher},
     sync::atomic::AtomicU32,
@@ -7,7 +5,11 @@ use core::{
 
 use rand::{Rng, SeedableRng, rngs::SmallRng};
 
-static COUNTER: OnceLock<AtomicU32> = OnceLock::new();
+#[cfg(feature = "std")]
+static COUNTER: std::sync::OnceLock<AtomicU32> = std::sync::OnceLock::new();
+
+#[cfg(not(feature = "std"))]
+static COUNTER: once_cell::sync::OnceCell<AtomicU32> = once_cell::sync::OnceCell::new();
 
 /// Return a 3-byte big-endian counter. The counter is initialized to a random
 /// value on first call and increments by 1 on each call, wrapping to 0 after 0xFFFFFF.
@@ -47,7 +49,7 @@ fn try_seed_from_os() -> Option<u64> {
 /// Returns a deterministic seed based on the current time, process ID, and hostname.
 fn deterministic_seed() -> u64 {
     let now = time::OffsetDateTime::now_utc().nanosecond();
-    let pid = std::process::id();
+    let pid = getpid();
     let hostname = get_hostname_string();
 
     let hasher = hashbrown::DefaultHashBuilder::default();
@@ -58,8 +60,24 @@ fn deterministic_seed() -> u64 {
     hasher.finish()
 }
 
+#[cfg(feature = "std")]
+fn getpid() -> u32 {
+    std::process::id()
+}
+
+#[cfg(not(feature = "std"))]
+fn getpid() -> u32 {
+    0
+}
+
 /// Returns the hostname as a string, using the `HOSTNAME` environment variable if set,
 /// or the system's hostname if available.
+#[cfg(feature = "std")]
 fn get_hostname_string() -> std::ffi::OsString {
     gethostname::gethostname()
+}
+
+#[cfg(not(feature = "std"))]
+fn get_hostname_string() -> &'static str {
+    "unknown"
 }

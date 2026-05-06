@@ -300,7 +300,7 @@ dependencies = [
  "gethostname",
  "getrandom",
  "hashbrown 0.17.0",
- "libc",
+ "once_cell",
  "rand",
  "rkyv",
  "serde",

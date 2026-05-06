@@ -1,4 +1,5 @@
 #![doc = include_str!("../README.md")]
+#![cfg_attr(all(not(feature = "std"), not(test)), no_std)]
 
 mod byte_gen;
 
@@ -240,14 +241,21 @@ fn unix_seconds_be4() -> Result<[u8; 4], ObjectIdError> {
     Ok((now as u32).to_be_bytes())
 }
 
-fn hex_to_bytes(hex: &str) -> Result<Vec<u8>, core::num::ParseIntError> {
+fn hex_to_bytes(hex: &str) -> Result<Vec<u8>, ObjectIdError> {
     let s = hex
         .strip_prefix("0x")
         .or_else(|| hex.strip_prefix("0X"))
         .unwrap_or(hex);
     (0..s.len())
         .step_by(2)
-        .map(|i| u8::from_str_radix(&s[i..i + 2], 16))
+        .map(|i| {
+            if i + 2 > s.len() {
+                return Err(ObjectIdError::Parse(format!("invalid digit at index {i}")));
+            } else {
+                u8::from_str_radix(&s[i..i + 2], 16)
+                    .map_err(|e| ObjectIdError::Parse(e.to_string()))
+            }
+        })
         .collect()
 }
 
@@ -368,6 +376,18 @@ mod tests {
             ObjectId::with_timestamp_seconds(0x80000000)
                 < ObjectId::with_timestamp_seconds(0xFFFFFFFF)
         );
+    }
+
+    #[test]
+    fn parse_object_id() {
+        assert!("536f6d652073656372657420".parse::<ObjectId>().is_ok());
+        assert!(
+            "536f6d6520736563726574209823798324893249823"
+                .parse::<ObjectId>()
+                .is_err()
+        );
+        assert!("12345".parse::<ObjectId>().is_err());
+        assert!("".parse::<ObjectId>().is_err());
     }
 
     #[test]

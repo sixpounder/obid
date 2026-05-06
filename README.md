@@ -16,6 +16,16 @@ let id = ObjectId::new();
 let id: ObjectId = "536f6d652073656372657420".parse().unwrap();
 ```
 
+## `no_std` Support
+
+To use this crate without the standard library, e.g. for embedded systems, disable the `std` feature.
+
+Please note that when not using the standard library some of the BSON specs
+for ObjectId are forcefully ignore. For example, in case a deterministic seed is required,
+there is no way to determine it from the PID of the process so `0` is used instead.
+
+
 ## Features
+- `std`: Enables use of the standard library.
 - `archive`: Enables serialization/deserialization using the `rkyv` crate.
 - `serde`: Enables serialization/deserialization using the `serde` crate.
