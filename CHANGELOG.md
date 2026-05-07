@@ -2,9 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.5.1 - 2026-05-07
+
+[04f32aa](04f32aa4d32215e88d888365f6fa1f902ff3e3a0)...[89f9d8e](89f9d8e0c67c51c90bf1868b57ebf293130692d2)
+
+### Miscellaneous Tasks
+
+- Make clippy happy again ([3724f3f](3724f3fefee55a9cf5505e63342bed391c0122d8))
+- List as non-std crate ([89f9d8e](89f9d8e0c67c51c90bf1868b57ebf293130692d2))
+
 ## 0.5.0 - 2026-05-06
 
-[f6e6f39](f6e6f3946b9c8037dedd1302710a9de7683fd315)...[d478d39](d478d39afd61fe7196a58cfcabeadffc493719e7)
+[f6e6f39](f6e6f3946b9c8037dedd1302710a9de7683fd315)...[04f32aa](04f32aa4d32215e88d888365f6fa1f902ff3e3a0)
 
 ### Features
 
@@ -14,6 +23,7 @@ All notable changes to this project will be documented in this file.
 ### Miscellaneous Tasks
 
 - Reduce reliance on std library ([12116d2](12116d2b9e846a900cc24a4530d07f6d6607f296))
+- Release version 0.5.0 ([04f32aa](04f32aa4d32215e88d888365f6fa1f902ff3e3a0))
 
 ## 0.4.0 - 2026-05-06
 
