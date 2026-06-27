@@ -25,7 +25,8 @@ use thiserror::Error;
 
 use crate::byte_gen::next_3byte_be;
 
-pub(crate) const OBJECT_ID_LENGTH: usize = 12;
+pub const OBJECT_ID_LENGTH: usize = 12;
+pub const OBJECT_ID_REPRESENTATION_LENGTH: usize = 24;
 
 /// An implementation of the ObjectId data type as defined in the BSON specification.
 ///
@@ -52,6 +53,10 @@ impl ObjectId {
     ///
     /// Returns an error if the string is not a valid hexadecimal representation of an ObjectId.
     pub fn parse<S: AsRef<str>>(s: S) -> Result<Self, ObjectIdError> {
+        if s.as_ref().len() != OBJECT_ID_REPRESENTATION_LENGTH {
+            return Err(ObjectIdError::Parse(format!("invalid length: {}", s.as_ref().len())));
+        }
+
         if let Ok(bytes) = hex_to_bytes(s.as_ref()) {
             Self::try_from_slice(&bytes).map_err(|_| ObjectIdError::Parse(s.as_ref().to_string()))
         } else {
@@ -84,14 +89,14 @@ impl ObjectId {
     /// Returns the timestamp component of the ObjectId as a `DateTime<Utc>`.
     pub fn timestamp(&self) -> Timestamp {
         Timestamp {
-            timestamp: time::OffsetDateTime::from_unix_timestamp(self.seconds() as i64)
+            inner: time::OffsetDateTime::from_unix_timestamp(self.seconds() as i64)
                 .expect("invalid timestamp"),
         }
     }
 
     /// Parses an ObjectId from a slice of bytes.
     fn try_from_slice(slice: &[u8]) -> Result<ObjectId, ObjectIdError> {
-        if slice.len() < OBJECT_ID_LENGTH {
+        if slice.len() != OBJECT_ID_LENGTH {
             return Err(ObjectIdError::InvalidSourceLength(slice.len()));
         }
 
@@ -181,16 +186,19 @@ impl TryFrom<&[u8; OBJECT_ID_LENGTH]> for ObjectId {
     }
 }
 
+impl TryFrom<[u8; OBJECT_ID_LENGTH]> for ObjectId {
+    type Error = ObjectIdError;
+
+    fn try_from(value: [u8; OBJECT_ID_LENGTH]) -> Result<Self, Self::Error> {
+        Self::try_from_slice(&value)
+    }
+}
+
 impl TryFrom<&str> for ObjectId {
     type Error = ObjectIdError;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
-        let bytes = value.as_bytes();
-        if bytes.len() < OBJECT_ID_LENGTH {
-            return Err(ObjectIdError::InvalidSourceLength(bytes.len()));
-        }
-
-        Self::try_from_slice(bytes)
+        Self::try_from_slice(value.as_bytes())
     }
 }
 
@@ -213,14 +221,20 @@ impl FromStr for ObjectId {
 const TS_PATTERN: &str = "[year]-[month]-[day] [hour repr:24]:[minute]:[second] [offset_hour sign:mandatory]:[offset_minute]";
 
 pub struct Timestamp {
-    timestamp: time::OffsetDateTime,
+    inner: time::OffsetDateTime,
 }
 
 impl Display for Timestamp {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         let fmt = time::format_description::parse(TS_PATTERN).unwrap();
-        let s = self.timestamp.format(&fmt).unwrap();
+        let s = self.inner.format(&fmt).unwrap();
         write!(f, "{}", s)
+    }
+}
+
+impl From<Timestamp> for u32 {
+    fn from(ts: Timestamp) -> Self {
+        ts.inner.unix_timestamp() as u32
     }
 }
 
@@ -289,26 +303,47 @@ mod tests {
         assert_eq!(id, reverse);
 
         let id = ObjectId::new();
-        let reverse = id.to_string().parse().unwrap();
-        let from_literal_bytes = ObjectId::try_from(id.to_string()).unwrap();
+        let reverse: ObjectId = id.to_string().parse().unwrap();
         assert_eq!(id, reverse);
-        assert_ne!(id, from_literal_bytes);
+
+        let from_literal_bytes: ObjectId = reverse.as_slice().try_into().unwrap();
+        assert_eq!(id, from_literal_bytes);
     }
 
     /// Tests that an ObjectId can be created from cypher
     #[test]
     fn test_object_id_from_string_slice() {
-        let cypher = "Some secret phrase here";
+        let cypher = "536f6d652073";
         let id = ObjectId::try_from(cypher);
         assert!(id.is_ok());
         let created_id = id.unwrap();
-        assert_eq!(created_id.clone().to_string(), "536f6d652073656372657420");
+        assert_eq!(created_id.clone().to_string(), "353336663664363532303733");
+    }
+
+    #[test]
+    fn test_object_id_from_bytes() {
+        let bytes: [u8; 12] = [0x35, 0x33, 0x36, 0x66, 0x36, 0x64, 0x36, 0x35, 0x32, 0x30, 0x37, 0x33];
+        let id = ObjectId::try_from(bytes);
+        assert!(id.is_ok());
+        let created_id = id.unwrap();
+        assert_eq!(created_id.clone().to_string(), "353336663664363532303733");
     }
 
     /// Tests that an ObjectId cannot be created from a too short cypher
     #[test]
     fn test_object_id_from_string_slice_short() {
         let cypher = "short";
+        let id = ObjectId::try_from(cypher.to_string());
+        assert!(matches!(
+            id.unwrap_err(),
+            ObjectIdError::InvalidSourceLength(_)
+        ))
+    }
+
+    /// Tests that an ObjectId cannot be created from a too long cypher
+    #[test]
+    fn test_object_id_from_string_slice_rickrolled() {
+        let cypher = "Never gonna give you up, never gonna let you down";
         let id = ObjectId::try_from(cypher.to_string());
         assert!(matches!(
             id.unwrap_err(),

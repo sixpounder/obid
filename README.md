@@ -12,9 +12,18 @@ use obid::ObjectId;
 // Create a new ObjectId
 let id = ObjectId::new();
 
-// Or parse an existing one
+// Parse an existing ObjectId from its raw string representation
 let id: ObjectId = "536f6d652073656372657420".parse().unwrap();
+
+// Generate an ObjectId from raw bytes
+let id: ObjectId = ObjectId::try_from([0x53, 0x6f, 0x6d, 0x65, 0x20, 0x73, 0x65, 0x63, 0x72, 0x65, 0x74, 0x20]).expect("invalid ObjectId bytes");
+
+let id: ObjectId = ObjectId::try_from("abcdefghilmn").expect("invalid ObjectId bytes");
+
+// etc...
 ```
+
+As seen in the examples above, the `try_from` method is used to convert a `&str` or `[u8; 12]` into an `ObjectId` by using the raw bytes from the input as "seed", while parsing means turning a string representation into an `ObjectId`.
 
 ## `no_std` Support
 
