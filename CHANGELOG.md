@@ -2,14 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.6.0 - 2026-06-27
+
+[31cccea](31ccceac5ef615dd8eb703b49fabd3635810e038)...[a562959](a562959792b0aa598219e97620342763506067ae)
+
+### Documentation
+
+- Correct typos ([0b75cab](0b75cab2b4833a5d32deed992283b1f3e7a37a92))
+
+### Features
+
+- TryFrom literal bytes value ([d4326da](d4326da55637bd9bf727e2daa2e8bb1b4becc8e2))
+
+### Miscellaneous Tasks
+
+- Modify cargo release commit message ([a562959](a562959792b0aa598219e97620342763506067ae))
+
 ## 0.5.1 - 2026-05-07
 
-[04f32aa](04f32aa4d32215e88d888365f6fa1f902ff3e3a0)...[89f9d8e](89f9d8e0c67c51c90bf1868b57ebf293130692d2)
+[04f32aa](04f32aa4d32215e88d888365f6fa1f902ff3e3a0)...[31cccea](31ccceac5ef615dd8eb703b49fabd3635810e038)
 
 ### Miscellaneous Tasks
 
 - Make clippy happy again ([3724f3f](3724f3fefee55a9cf5505e63342bed391c0122d8))
 - List as non-std crate ([89f9d8e](89f9d8e0c67c51c90bf1868b57ebf293130692d2))
+- Release version 0.5.1 ([31cccea](31ccceac5ef615dd8eb703b49fabd3635810e038))
 
 ## 0.5.0 - 2026-05-06
 

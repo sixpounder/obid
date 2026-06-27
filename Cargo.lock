@@ -295,7 +295,7 @@ dependencies = [
 
 [[package]]
 name = "obid"
-version = "0.5.1"
+version = "0.6.0"
 dependencies = [
  "gethostname",
  "getrandom",
