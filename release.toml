@@ -1,8 +1,15 @@
-sign-tag = true
-push = true
+allow-branch = ["main"]
+
+release = true
 publish = true
-sign-commit = true
-push-remote = "origin"
-pre-release-commit-message = "chore: release version {{version}}"
+
+tag = true
 tag-message = "release {{version}}"
+sign-tag = true
+
+push = true
+push-remote = "origin"
+sign-commit = true
+
+pre-release-commit-message = "chore(cargo-release): release version {{version}}"
 pre-release-hook = [ "git", "cliff", "-o", "CHANGELOG.md", "--tag", "{{version}}" ]
